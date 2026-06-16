@@ -1,0 +1,25 @@
+# agr aap chahte ho koi task chle and done ho jaye container ki trh chlta naa rhe to aap Job bnate ho. ex - backup job, patching, upgrade job
+# Job parallel main bhi chl skti hai
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: demo-job
+  namespace: nginx
+spec:
+  # kitni baar job chlana chahte ho
+  completions: 1
+  # 1 pod bn kr k job done kr dega
+  parallelism: 1
+  template:
+    metadata:
+      name: demo-job-pod
+      labels: 
+        app: batch-job
+    spec:
+      containers:
+        - name: batch-container
+          image: busybox:latest
+          command: ["sh", "-c", "echo hello world!!!!! && sleep 10"]
+      # restart krne ki policy kya hai
+      restartPolicy: Never
+
