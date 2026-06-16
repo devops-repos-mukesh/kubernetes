@@ -1,0 +1,26 @@
+# daemon-set ka matlab ye rhta hai ki har worker node pr
+# ek replica to chle hi
+# agr 3 worker nodes hain to teeno pr ek ek pod chlega. kind se aap check kr skte ho
+apiVersion: apps/v1
+kind: DaemonSet
+metadata: 
+  name: nginx-ds
+  namespace: nginx
+spec:
+  # replicas: 2
+  selector:
+
+    matchLabels:
+      app: nginx
+# pod.yml yha pr likhi hai
+  template:
+    metadata:
+      name: nginx-deamon-set-po
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
