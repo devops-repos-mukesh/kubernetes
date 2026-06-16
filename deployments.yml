@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: nginx-deployment
+  namespace: nginx
+# - replicaset, statefulset, deployment 
+# - replication controller - manages replicas of a pod
+# - replicaset - 4 replicas ban jayenge
+# - stateful set - har ek pod ka pod number same rhega lets say 3 number ka pod gaya to 3rd number ka hi up hoga ye kaam stateful set ka hai
+# - deployment - provide rolling update + above these
+# overall kaam teeno ka same hi hai
+# label - har ek pod ko ek label chahiye pehchanne ke liye
+# selector: label match krta hai.
+spec:
+  replicas: 2
+  selector:
+
+    matchLabels:
+      app: nginx
+# pod.yml yha pr likhi hai
+  template:
+    metadata:
+      name: nginx-deployment-po
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
