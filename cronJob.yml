@@ -1,0 +1,48 @@
+# A Job that you can schedule
+apiVersion: batch/v1
+kind: CronJob
+
+metadata:
+  name: minute-bckup
+  namespace: nginx
+# min, h, day, do week, do day 
+spec:
+  schedule: "*/2 * * * *"
+  jobTemplate:
+    spec: 
+      template:
+        metadata:
+          name: minute-backup
+          labels:
+            app: min-backup
+    # for pod
+        spec:
+          containers:
+            - name: backup-container
+              image: busybox:latest
+              command:
+                - sh
+                - -c
+                - | 
+                  echo "backup started"
+                  mkdir -p /backups &&
+                  mkdir -p /data &&
+                  cp -r /data /backups &&
+                  echo "backup completed"
+              volumeMounts:
+                - name: data-volume
+                  mountPath: /demo-data
+                - name: backup-volume
+                  mountPath: /backups
+          restartPolicy: OnFailure
+          # host volume - on your local computer
+          volumes:
+              - name: data-volume
+                hostPath: 
+                  path: /demo-data
+                  type: DirectoryOrCreate
+              - name: backup-volume
+                hostPath: 
+                  path: /backup-data
+                  type: DirectoryOrCreate
+
