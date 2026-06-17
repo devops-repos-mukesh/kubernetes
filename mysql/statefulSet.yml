@@ -38,8 +38,13 @@ spec:
           value: root
 
         - name: MYSQL_DATABASE
-          value: devops
-
+          # config map yha dalo
+          valueFrom: 
+            configMapKeyRef:
+              # cm name
+              name: mysql-config-map
+              # key name of secret
+              key: MYSQL_DATABASE
         
         #iska volume isi file main dalega nahi ton nahi chlega
         volumeMounts:
