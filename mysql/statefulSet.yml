@@ -35,7 +35,11 @@ spec:
 
         env:
         - name: MYSQL_ROOT_PASSWORD
-          value: root
+          valueFrom: 
+            secretKeyRef:
+              name: mysql-secret
+              # same as secret file
+              key: MYSQL_ROOT_PASSWORD  
 
         - name: MYSQL_DATABASE
           # config map yha dalo
