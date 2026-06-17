@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm
+data:
+  player_initial_lives: "3"
+  ui_file_name: "user_interface.properties"
+  
+  game.properties:
+    enemy.types=aliens,monster
+    player.maximum-lives=5
+  user_interface.properties:
+    color.good=purple
+    color.bad=yellow
+

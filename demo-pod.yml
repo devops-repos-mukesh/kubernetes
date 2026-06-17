@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    env: production
+    owner: mukesh
+  name: demo-pod
+spec:
+  containers:
+    - name: my-nginx-server
+      image: nginx
