@@ -1,0 +1,21 @@
+# storage k liye persistent volume and persistent volume claim use hota hai.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv
+  labels:
+    app: local
+spec:
+  capacity:
+    # storage nikal diya 1 Gi ka 30gb se
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  # retain the data after delete the pod
+  persistentVolumeReclaimPolicy: Retain
+  # storage class - local-storage, cloud-storage
+  storageClassName: local-storage
+  # host pr storage ki location
+  hostPath:
+
+    path: /mnt/data
