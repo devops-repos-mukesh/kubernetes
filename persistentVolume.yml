@@ -1,5 +1,5 @@
 # storage k liye persistent volume and persistent volume claim use hota hai.
-# 3 step process - create PV, claim PV(or create PVC), create deployments in the same namespace. if namespaces are different then the vol bind won'y work
+# 3 step process - create PV, claim PV(or create PVC), create deployments in the same namespace.
 apiVersion: v1
 kind: PersistentVolume
 metadata:
