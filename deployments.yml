@@ -29,3 +29,13 @@ spec:
           image: nginx:latest
           ports:
             - containerPort: 80
+
+          # adding the mount path of 1 gb PV
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: my-volume
+      volumes:
+        - name: my-volume
+          # claim name
+          persistentVolumeClaim:
+            claimName: local-pvc

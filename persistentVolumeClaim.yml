@@ -1,0 +1,15 @@
+# sirf persistent volume se kuch nahi hota mittar, use claim bhi krna hota hai. fir pv "available" se "bound" ho jayega
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+
+  name: local-pvc
+  namespace: nginx
+spec:
+  accessModes:
+    - ReadWriteOnce
+  # how many from 1 gb are you claming
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-storage
