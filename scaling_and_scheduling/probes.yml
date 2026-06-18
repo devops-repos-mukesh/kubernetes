@@ -3,3 +3,7 @@
 # liveness probe - 8000 port pr req mar kr check krega
 # readiness probe - pod ready h k nahi
 # startup probe - start sahi se hua k nahi
+livenessProbe:
+      httpGet:
+        path: /
+        port: 8080
