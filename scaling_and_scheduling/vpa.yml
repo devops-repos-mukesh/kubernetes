@@ -1,0 +1,18 @@
+# iske liye phle to plugin chahiye
+# cmd -  git clone https://github.com/kubernetes/autoscaler.git
+# /home/mukesh/autoscaler/vertical-pod-autoscaler - yha aana h
+# hack$ ./vpa-up.sh - ye script run krni hai.
+kind: VerticalPodAutoscaler
+apiVersion: autoscaling.k8s.io/v1
+metadata:
+  name: apache-vpa
+  namespace: apache
+spec:
+  targetRef:
+    name: apache-deployment
+    apiVersion: apps/v1
+    kind: Deployment
+  updatePolicy:
+    # Auto, Initial , off rkh sakte hain
+    updateMode: "InPlaceOrRecreate"
+

@@ -1,0 +1,7 @@
+# autoscaling - HPA(horizontal pod scaling), VPA(vertical pod scaling), KEDA(kubernetes event driven autoscaling)
+# HPA - traffic jyada aane pr horizontally scale kr deta hai replica krke( 1 pod k 3 ho jayege)
+# VPC -  agr phle 100Mi and 200m le rha tha to abhi wo 500Mi and 500m lene lgega. yani ek hi pod main resource limit bdh jati hai
+# ex - django app(HPA), mysql (VPA)
+# KEDA - traffic jyada aane pr HPA lga dega, and stress jyada aane pr VPA lga dega. kya hoga ye metrics pr depend krta hai
+# Metrics - cpu, ram usage
+# kube-system main api hona chahiye metrics collect krne ke liye. jo minikube yaa kind se download hoga
