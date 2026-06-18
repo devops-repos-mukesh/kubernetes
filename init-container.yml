@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: init-demo
+spec:
+
+  # Init container runs first
+  initContainers:
+  - name: init-wait
+    image: busybox
+    command: ['sh', '-c', 'echo waiting for setup... && sleep 5']
+
+  # Main application container
+  containers:
+  - name: app
+    image: nginx
+    ports:
+    - containerPort: 80
