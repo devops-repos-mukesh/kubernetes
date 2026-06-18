@@ -1,0 +1,16 @@
+#used for routing
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: web-vs
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - web-gateway
+  http:
+  - route:
+    - destination:
+        host: web-service
+        port:
+          number: 80
