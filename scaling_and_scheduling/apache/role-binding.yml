@@ -5,9 +5,10 @@ metadata:
   namespace: apache
 # invoved persons
 subjects:
-- kind: User
+- kind: ServiceAccount 
   name: apache-user
-  apiGroup: rbac.authorization.k8s.io
+  namespace: apache
+    #apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: Role
   name: apache-manager

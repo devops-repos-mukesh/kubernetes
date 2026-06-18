@@ -2,7 +2,7 @@
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: apche-manager
+  name: apache-manager
   namespace: apache
 rules:
   # api version dalega api group main - like v1, apps/v1, batch/v1
@@ -13,9 +13,9 @@ rules:
       - batch
     # resource matlab / ke baad wala - like apps ke liye v1, "" ke liye v1, deployment, namespace etc
     resources: 
-      - deployment
-      - pod
-      - service
+      - deployments
+      - pods
+      - services
     # verbs main action -like get ,apply , delete etc
     verbs: 
       - get
