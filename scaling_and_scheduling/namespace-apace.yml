@@ -1,0 +1,5 @@
+kind: Namespace
+apiVersion: v1
+  # for HPA
+metadata:
+  name: apache 

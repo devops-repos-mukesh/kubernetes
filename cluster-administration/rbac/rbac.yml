@@ -1,0 +1,7 @@
+# role base access control - similar to jenkins one. kubernetes k resource ka aapko access hai ki nahi use roles and role binding k through manage krte hian
+# service accounts - like manager name se ek service account bna hua hai. ye resource level pr bnta h like namespace k liye
+# user - cluster level pr bnte hain
+# like namespace pr roles hote hain jo role binding se attach hote hain
+# cluster level pr role nahi hote cluster role hote hain and cluster binding se use bind krte hain
+
+# iska demo apache folder main hai

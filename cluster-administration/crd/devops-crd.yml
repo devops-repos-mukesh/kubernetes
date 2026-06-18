@@ -1,0 +1,81 @@
+# CRD - Custom Resource Definition
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+
+metadata:
+  # CRD ka full name = plural.group
+  name: devopsbatches.trainwithshubham.com
+
+spec:
+
+  # API group (custom API namespace)
+  # like apps/v1 ka apps
+  group: trainwithshubham.com
+
+  # Resource naming configuration
+  names:
+    # jaise pod ke liye pods
+    # kubectl get devopsbatches
+    plural: devopsbatches
+
+    # kubectl get devopsbatch
+    singular: devopsbatch
+    # kya kind rhega
+    # Kind name (YAML me use hota hai)
+    kind: DevOpsBatch
+
+    # Short names for kubectl
+    shortNames:
+      - tws
+      - junoon
+
+  # Scope of resource
+  # Namespaced = namespace ke andar
+  # Cluster = poore cluster me
+  scope: Namespaced
+
+  # CRD versions (must be inside spec)
+  versions:
+
+    - name: v1
+
+      # API version available rahegi
+      served: true
+
+      # Default storage version
+      storage: true
+
+      # Schema validation (allowed fields define karta hai)
+      schema:
+
+        openAPIV3Schema:
+
+          type: object
+
+          properties:
+
+            spec:
+
+              type: object
+
+              properties:
+
+                # Batch ka name
+                name:
+                  type: string
+                  description: "This is the name of the DevOps Batch"
+
+                # Batch duration
+                duration:
+                  type: string
+                  description: "This is the duration of the DevOps Batch"
+
+                # Mode: Live / Recorded
+                mode:
+                  type: string
+                  description: "This is the mode of the batch eg. Live/Recorded"
+
+                # Platform name
+                platform:
+                  type: string
+                  description: "This is the platform of the batch"

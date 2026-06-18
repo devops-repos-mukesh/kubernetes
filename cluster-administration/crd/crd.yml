@@ -1,0 +1,4 @@
+# stands for Custom Resource Definitions
+# aise resources jo kubernetes main available nahi hote
+# like resource jo kubernetes janta hai wo hain - pods, deployments, services
+# custom resrouce ka matlab jinhe kubernetes nahi janta hai and wo hm custom tareeke se bnayenge# so CRD ek tareeka hai jisse aap define krne ke baad apne custom resources bna sakte ho

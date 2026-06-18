@@ -29,7 +29,17 @@ spec:
           image: nginx:latest
           ports:
             - containerPort: 80
-
+          
+          # adding resource quotas in the old deplotment which was on main
+          resources:
+            # minimum req
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            # max limits apply here. after max limit ye pod scale ho jayega
+            limits:
+              cpu: 200m
+              memory: 256Mi
           # adding the mount path of 1 gb PV
           volumeMounts:
             - mountPath: /var/www/html
@@ -39,3 +49,4 @@ spec:
           # claim name
           persistentVolumeClaim:
             claimName: local-pvc
+

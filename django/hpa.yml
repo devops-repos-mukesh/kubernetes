@@ -1,0 +1,25 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: notes-app-hpa
+  namespace: nginx
+
+spec:
+  scaleTargetRef:
+    # yha btao kise scale krne ka deployment service yaa kuch or
+    kind: Deployment
+    name: notes-app-deployment
+
+    apiVersion: apps/v1
+  minReplicas: 1
+  maxReplicas: 3 
+  # metrics here
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          # average utilization cpu percent
+          averageUtilization: 5
+

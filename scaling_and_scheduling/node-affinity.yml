@@ -1,0 +1,3 @@
+# node affinity matlab kisi node pr pod ko spin krane ki affinity
+# agr hum keys main node affinity de de to pod usi node pr spin up krega
+# kindof same system as taint and tolerance but opposite

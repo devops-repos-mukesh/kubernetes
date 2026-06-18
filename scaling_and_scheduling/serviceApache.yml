@@ -1,0 +1,14 @@
+# 8082 pr chl rha hai port-forward kr k
+kind: Service
+apiVersion: v1
+metadata:
+  name: apache-service
+  namespace: apache
+spec:
+  selector:
+      app: apache
+  ports:
+    - protocol: TCP
+      port: 80 # cluster port
+      targetPort: 80 #container port
+  type: ClusterIP
