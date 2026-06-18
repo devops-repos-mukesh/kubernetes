@@ -1,1 +1,13 @@
 # koi ek hi pod sare system resources naa le le iske liye limit lgate ke storage and cpu pr use hi resource quotas main manage krte hain
+#
+# adding resource quotas in the old deplotment which was on main
+          resources:
+            # minimum req
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            # max limits apply here. after max limit ye pod scale ho jayega
+            limits:
+              cpu: 200m
+              memory: 256Mi
+
