@@ -1,6 +1,7 @@
 # taint - agr aap chahte ho k scedular node 1 pr pod naa create kre to use taint kr dete hain. usse us node pr pod nahi bnega
 # tolerance - agr koi node tainted hai, fir bhi usme pod chlana chahte ho to wo us server pr tolerance kr skte hain
 # command - kubectl taint node node_name prod=true:NoSchedule
+# is command se pod bnega to but node pr pending state main aa jayega
 # syntax after tainting a node and applying tolerations
 tolerations:
 - key: "key1"
