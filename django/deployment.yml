@@ -20,7 +20,6 @@ spec:
         image: msmukeshkumarsharma/notes-app-k8s:latest
         ports:
         - containerPort: 8000
-
         # adding the probe here
         livenessProbe:
           httpGet:
