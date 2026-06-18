@@ -1,0 +1,22 @@
+# agar appke deploment apko public ke liye available krane hai to apko apne deployments pr service lgani pdegi
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx-service
+  namespace: nginx
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      # bahari duniya ke liye port
+      port: 80
+      # pod ke andar ka port
+      targetPort: 80
+    # type of service- ClusterIP, NodePort, Loadbalancer, external IP, headless service
+    # clusterip - cluster ke ip pr map ho jata hai
+    # node port - poore node ka port assign ho jayega
+    # load balancer: generally cloud pr use hoti hai
+    # external ip - isme bahar ki ip de skte ho like domain name or route53 se redirect krne k liye
+    # headless - generally used with stateful sets
+  type: ClusterIP

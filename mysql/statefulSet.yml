@@ -1,0 +1,64 @@
+# basically stateful apps k liye use hota hai(like mysql)
+# like database
+# unke liye use hote hain stateful set
+# stateless app k liye -  deployments, replicaset, daemon-set
+# stateful app k liye -  statefulset
+# each pod carry a state. jo naya pod aata hai uski state and number same hi rhenge as deleted one(in stateful set)
+# stateful set main service and volume dono ek yaml file main hi hote hain
+# mysql-statefulset-0, 1, 2 is name se bnege sb
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: mysql-statefulset
+  namespace: mysql
+
+spec:
+  serviceName: mysql-service
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: mysql    # template ke label selector ke matchlabel ke same hona chahiye
+  template:
+    metadata:
+      labels:
+        app: mysql
+
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+
+        ports:
+        - containerPort: 3306
+
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+
+        - name: MYSQL_DATABASE
+          # config map yha dalo
+          valueFrom: 
+            configMapKeyRef:
+              # cm name
+              name: mysql-config-map
+              # key name of secret
+              key: MYSQL_DATABASE
+        
+        #iska volume isi file main dalega nahi ton nahi chlega
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-data
+
+    spec:
+      accessModes:
+      - ReadWriteOnce
+
+      resources:
+        requests:
+          storage: 1Gi
