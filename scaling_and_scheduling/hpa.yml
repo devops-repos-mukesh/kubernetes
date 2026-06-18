@@ -15,8 +15,9 @@ spec:
   # metrics here
   metrics:
     - type: Resource
-      name: cpu
-      target:
-        type: Utilization
-        # average utilization cpu percent
-        averageUtilization: 5
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          # average utilization cpu percent
+          averageUtilization: 5
