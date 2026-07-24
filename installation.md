@@ -1,70 +1,61 @@
-# Kubernetes Hybrid Cluster Setup
-## Control Plane on Local Laptop + Worker Node on AWS EC2
+# Hybrid Kubernetes Cluster Setup (Laptop as Control Plane + AWS EC2 as Worker)
 
-This guide demonstrates how to create a hybrid Kubernetes cluster where:
+This guide explains how to create a hybrid Kubernetes cluster where:
 
-- **Control Plane (Master Node):** Local Ubuntu Laptop
-- **Worker Node:** AWS EC2 Instance (Ubuntu)
+- **Control Plane:** Local Ubuntu Laptop
+- **Worker Node:** AWS EC2 Ubuntu Instance
 - **Container Runtime:** containerd
+- **Networking:** Tailscale VPN
 - **Bootstrap Tool:** kubeadm
-- **CNI:** Calico
+- **CNI Plugin:** Calico
 
 ---
 
-# Architecture
+## Architecture
 
 ```text
-                        Internet
-                            │
-                     Public IP / VPN
-                            │
-                    +----------------+
-                    |   AWS EC2      |
-                    | Ubuntu         |
-                    | Worker Node    |
-                    +----------------+
-                            ▲
-                            │
-                       kubeadm join
-                            │
-────────────────────────────┼────────────────────────────
-                            │
-                    Home / Office Network
-                            │
-                    +----------------+
-                    |   Local Laptop |
-                    | Ubuntu         |
-                    | Control Plane  |
-                    | API Server     |
-                    | etcd           |
-                    | Scheduler      |
-                    +----------------+
+                 +----------------------+
+                 |   Ubuntu Laptop      |
+                 |  Control Plane       |
+                 |----------------------|
+                 | kube-apiserver       |
+                 | etcd                 |
+                 | scheduler            |
+                 | controller-manager   |
+                 +----------+-----------+
+                            |
+                     Tailscale VPN
+                            |
+                 +----------+-----------+
+                 |      AWS EC2         |
+                 |    Worker Node       |
+                 |----------------------|
+                 | kubelet              |
+                 | kube-proxy           |
+                 | Calico               |
+                 +----------------------+
 ```
 
 ---
 
 # Prerequisites
 
-## Local Laptop
+## Laptop
 
-- Ubuntu 22.04 / 24.04
-- Minimum 4 vCPUs
-- Minimum 8 GB RAM
-- Stable Internet
-- Public IP or VPN (Recommended)
+- Ubuntu 24.04
+- 4 CPU
+- 8 GB RAM
+- Internet Connection
 
----
+## EC2
 
-## AWS EC2
-
-- Ubuntu 22.04 / 24.04
-- t3.medium or higher
-- Security Group configured
-- Public IP
+- Ubuntu 24.04
+- t3.medium or larger
+- Security Group allowing SSH
 
 ---
 
-# Step 1: Update System
+# 1. Update System
 
 Run on **both machines**
 
@@ -75,13 +66,10 @@ sudo apt upgrade -y
 
 ---
 
-# Step 2: Disable Swap
-
-Run on **both machines**
+# 2. Disable Swap
 
 ```bash
 sudo swapoff -a
-
 sudo sed -i '/swap/d' /etc/fstab
 ```
 
@@ -93,9 +81,7 @@ free -h
 
 ---
 
-# Step 3: Enable Required Kernel Modules
-
-Run on **both machines**
+# 3. Load Kernel Modules
 
 ```bash
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
@@ -104,27 +90,14 @@ br_netfilter
 EOF
 ```
 
-Load modules
-
 ```bash
 sudo modprobe overlay
-
 sudo modprobe br_netfilter
-```
-
-Verify
-
-```bash
-lsmod | grep br_netfilter
-
-lsmod | grep overlay
 ```
 
 ---
 
-# Step 4: Configure Sysctl
-
-Run on **both machines**
+# 4. Configure Sysctl
 
 ```bash
 cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
@@ -140,29 +113,29 @@ Apply
 sudo sysctl --system
 ```
 
-Verify
+---
+
+# 5. Install Required Packages
 
 ```bash
-sysctl net.ipv4.ip_forward
-```
-
-Output
-
-```
-net.ipv4.ip_forward = 1
+sudo apt install -y \
+containerd \
+conntrack \
+socat \
+ebtables \
+ethtool \
+ipset \
+apt-transport-https \
+ca-certificates \
+curl \
+gpg
 ```
 
 ---
 
-# Step 5: Install Containerd
+# 6. Configure containerd
 
-Run on **both machines**
-
-```bash
-sudo apt install -y containerd
-```
-
-Create configuration
+Generate config
 
 ```bash
 sudo mkdir -p /etc/containerd
@@ -170,23 +143,19 @@ sudo mkdir -p /etc/containerd
 containerd config default | sudo tee /etc/containerd/config.toml
 ```
 
----
-
-# Step 6: Configure containerd
-
 Edit
 
 ```bash
 sudo nano /etc/containerd/config.toml
 ```
 
-Find
+Change
 
 ```
 SystemdCgroup = false
 ```
 
-Replace with
+to
 
 ```
 SystemdCgroup = true
@@ -196,52 +165,23 @@ Restart
 
 ```bash
 sudo systemctl restart containerd
-
 sudo systemctl enable containerd
-```
-
-Verify
-
-```bash
-systemctl status containerd
 ```
 
 ---
 
-# Step 7: Install Kubernetes Components
-
-Run on **both machines**
-
-Install dependencies
-
-```bash
-sudo apt install -y apt-transport-https ca-certificates curl gpg
-```
-
-Create keyring directory
+# 7. Install Kubernetes
 
 ```bash
 sudo mkdir -p /etc/apt/keyrings
-```
 
-Add Kubernetes repository
-
-```bash
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key \
 | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-```
 
-Add repository
-
-```bash
 echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] \
 https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /" \
 | sudo tee /etc/apt/sources.list.d/kubernetes.list
-```
 
-Install Kubernetes
-
-```bash
 sudo apt update
 
 sudo apt install -y kubelet kubeadm kubectl
@@ -249,132 +189,83 @@ sudo apt install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 ```
 
+---
+
+# 8. Install Tailscale
+
+```bash
+curl -fsSL https://tailscale.com/install.sh | sh
+```
+
+Start
+
+```bash
+sudo tailscale up
+```
+
+Login using the URL displayed.
+
 Verify
 
 ```bash
-kubectl version --client
-
-kubeadm version
-
-kubelet --version
-```
-
----
-
-# Step 8: Configure Firewall
-
-## Laptop
-
-Allow
-
-```
-6443
-2379-2380
-10250
-10257
-10259
-```
-
-Example (UFW)
-
-```bash
-sudo ufw allow 6443/tcp
-
-sudo ufw allow 2379:2380/tcp
-
-sudo ufw allow 10250/tcp
-
-sudo ufw allow 10257/tcp
-
-sudo ufw allow 10259/tcp
-```
-
----
-
-## AWS Security Group
-
-Allow inbound
-
-| Port | Source |
-|--------|------------|
-|22|Your Public IP|
-|6443|Your Public IP|
-|10250|Your Public IP|
-|30000-32767|Optional|
-
----
-
-# Step 9: Get Laptop Public IP
-
-```bash
-curl ifconfig.me
+tailscale status
 ```
 
 Example
 
 ```
-49.xx.xx.xx
+100.x.x.x laptop
+100.x.x.x ec2
 ```
 
 ---
 
-# Step 10: Initialize Control Plane
+# 9. Initialize Control Plane
 
-Run only on **Laptop**
+Run **only on Laptop**
+
+Find Tailscale IP
 
 ```bash
-sudo kubeadm init \
---control-plane-endpoint=<YOUR_PUBLIC_IP>:6443 \
---pod-network-cidr=192.168.0.0/16
+tailscale ip -4
 ```
 
 Example
 
+```
+100.114.208.15
+```
+
+Initialize
+
 ```bash
 sudo kubeadm init \
---control-plane-endpoint=49.xx.xx.xx:6443 \
+--apiserver-advertise-address=100.114.208.15 \
+--control-plane-endpoint=100.114.208.15:6443 \
 --pod-network-cidr=192.168.0.0/16
 ```
 
-Wait until initialization completes.
-
 ---
 
-# Step 11: Configure kubectl
-
-Run only on **Laptop**
+# 10. Configure kubectl
 
 ```bash
-mkdir -p $HOME/.kube
+mkdir -p ~/.kube
 
-sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo cp /etc/kubernetes/admin.conf ~/.kube/config
 
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
-```
-
-Verify
-
-```bash
-kubectl get nodes
-```
-
-Output
-
-```
-control-plane    NotReady
+sudo chown $(id -u):$(id -g) ~/.kube/config
 ```
 
 ---
 
-# Step 12: Install Calico
-
-Run only on **Laptop**
+# 11. Install Calico
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/master/manifests/calico.yaml
+kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/calico.yaml
 ```
 
-Check pods
+Wait until pods become Running
 
 ```bash
 kubectl get pods -n kube-system
@@ -382,85 +273,83 @@ kubectl get pods -n kube-system
 
 ---
 
-# Step 13: Get Join Command
-
-If kubeadm init just completed, it will display something like
-
-```bash
-kubeadm join <CONTROL_PLANE_IP>:6443 \
---token <TOKEN> \
---discovery-token-ca-cert-hash sha256:<HASH>
-```
-
-Copy this command.
-
----
-
-## If Join Command is Lost
-
-Generate a new token
+# 12. Get Join Command
 
 ```bash
 kubeadm token create --print-join-command
 ```
 
----
-
-# Step 14: Join EC2 Worker
-
-Run on **EC2**
-
 Example
 
 ```bash
-sudo kubeadm join 49.xx.xx.xx:6443 \
---token abcdef.0123456789abcdef \
---discovery-token-ca-cert-hash sha256:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+sudo kubeadm join 100.114.208.15:6443 \
+--token <TOKEN> \
+--discovery-token-ca-cert-hash sha256:<HASH>
 ```
-
-Wait for successful join.
 
 ---
 
-# Step 15: Verify Cluster
+# 13. Join Worker
 
-Run on Laptop
+Run on EC2
 
 ```bash
-kubectl get nodes
+sudo kubeadm join 100.114.208.15:6443 \
+--token <TOKEN> \
+--discovery-token-ca-cert-hash sha256:<HASH>
 ```
 
-Output
+---
+
+# 14. Verify Cluster
+
+```bash
+kubectl get nodes -o wide
+```
+
+Expected
 
 ```
-NAME            STATUS   ROLES           AGE
-
-laptop          Ready    control-plane   10m
-
-ec2-worker      Ready    <none>          2m
+NAME              STATUS   ROLES
+mukesharma        Ready    control-plane
+ip-172-31-90-92   Ready    <none>
 ```
 
 ---
 
 # Useful Commands
 
-## List Nodes
+View Nodes
 
 ```bash
 kubectl get nodes
 ```
 
----
+Watch Nodes
 
-## List All Pods
+```bash
+kubectl get nodes -w
+```
+
+View Pods
 
 ```bash
 kubectl get pods -A
 ```
 
----
+View System Pods
 
-## Cluster Information
+```bash
+kubectl get pods -n kube-system
+```
+
+Describe Node
+
+```bash
+kubectl describe node <node-name>
+```
+
+Cluster Info
 
 ```bash
 kubectl cluster-info
@@ -468,29 +357,51 @@ kubectl cluster-info
 
 ---
 
-## Check Node Details
+# Troubleshooting
+
+### conntrack missing
 
 ```bash
-kubectl describe node <node-name>
-```
-
-Example
-
-```bash
-kubectl describe node ip-172-31-22-10
+sudo apt install conntrack
 ```
 
 ---
 
-## View Worker Status
+### API Server Timeout
+
+Check
 
 ```bash
-kubectl get nodes -o wide
+curl -k https://<TAILSCALE_IP>:6443/healthz
+```
+
+Should return
+
+```
+ok
 ```
 
 ---
 
-## Check kubelet
+### Verify Tailscale
+
+```bash
+tailscale status
+```
+
+Both machines must appear.
+
+---
+
+### Verify API Server
+
+```bash
+sudo ss -tlnp | grep 6443
+```
+
+---
+
+### Check kubelet
 
 ```bash
 sudo systemctl status kubelet
@@ -498,7 +409,7 @@ sudo systemctl status kubelet
 
 ---
 
-## Check containerd
+### Check containerd
 
 ```bash
 sudo systemctl status containerd
@@ -506,65 +417,9 @@ sudo systemctl status containerd
 
 ---
 
-## Restart kubelet
+### Reset Cluster
 
-```bash
-sudo systemctl restart kubelet
-```
-
----
-
-## Restart containerd
-
-```bash
-sudo systemctl restart containerd
-```
-
----
-
-## Check Kubernetes System Pods
-
-```bash
-kubectl get pods -n kube-system
-```
-
----
-
-## Watch Cluster
-
-```bash
-watch kubectl get nodes
-```
-
----
-
-## Drain Worker
-
-```bash
-kubectl drain <node-name> --ignore-daemonsets
-```
-
----
-
-## Uncordon Worker
-
-```bash
-kubectl uncordon <node-name>
-```
-
----
-
-## Delete Worker
-
-```bash
-kubectl delete node <node-name>
-```
-
----
-
-# Reset Cluster
-
-## Control Plane
+Control Plane
 
 ```bash
 sudo kubeadm reset -f
@@ -574,9 +429,7 @@ sudo rm -rf ~/.kube
 sudo rm -rf /etc/cni/net.d
 ```
 
----
-
-## Worker
+Worker
 
 ```bash
 sudo kubeadm reset -f
@@ -586,54 +439,18 @@ sudo rm -rf /etc/cni/net.d
 
 ---
 
-# Troubleshooting
+# Final Result
 
-## Worker Cannot Join
+```text
+Laptop
+└── Kubernetes Control Plane
 
-Check connectivity
+        │
+   Tailscale VPN
+        │
 
-```bash
-nc -zv <CONTROL_PLANE_IP> 6443
+AWS EC2
+└── Kubernetes Worker Node
 ```
 
----
-
-## Check API Server
-
-```bash
-kubectl get pods -n kube-system
-```
-
----
-
-## Check kubelet Logs
-
-```bash
-journalctl -u kubelet -f
-```
-
----
-
-## Check containerd Logs
-
-```bash
-journalctl -u containerd -f
-```
-
----
-
-## Check Node Status
-
-```bash
-kubectl describe node <node-name>
-```
-
----
-
-# Notes
-
-- The control plane runs on your local laptop.
-- The EC2 instance acts as a worker node.
-- The control plane must remain powered on for the cluster to function.
-- If using a public IP, ensure TCP port **6443** is reachable from the EC2 instance.
-- For better security and reliability, consider using a VPN solution like **Tailscale** or **WireGuard** instead of exposing the API server directly to the internet.
+You now have a fully functional **hybrid Kubernetes cluster** with your local laptop acting as the control plane and an AWS EC2 instance acting as the worker node.
