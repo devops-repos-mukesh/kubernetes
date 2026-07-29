@@ -13,28 +13,8 @@ This guide explains how to create a hybrid Kubernetes cluster where:
 
 ## Architecture
 
-```text
-                 +----------------------+
-                 |   Ubuntu Laptop      |
-                 |  Control Plane       |
-                 |----------------------|
-                 | kube-apiserver       |
-                 | etcd                 |
-                 | scheduler            |
-                 | controller-manager   |
-                 +----------+-----------+
-                            |
-                     Tailscale VPN
-                            |
-                 +----------+-----------+
-                 |      AWS EC2         |
-                 |    Worker Node       |
-                 |----------------------|
-                 | kubelet              |
-                 | kube-proxy           |
-                 | Calico               |
-                 +----------------------+
-```
+<img width="1176" height="740" alt="image" src="https://github.com/user-attachments/assets/040c1b9c-15d3-4c5d-8d34-9b87da4cfb1a" />
+
 
 ---
 
@@ -441,16 +421,4 @@ sudo rm -rf /etc/cni/net.d
 
 # Final Result
 
-```text
-Laptop
-└── Kubernetes Control Plane
-
-        │
-   Tailscale VPN
-        │
-
-AWS EC2
-└── Kubernetes Worker Node
-```
-
-You now have a fully functional **hybrid Kubernetes cluster** with your local laptop acting as the control plane and an AWS EC2 instance acting as the worker node.
+<img width="1176" height="740" alt="image" src="https://github.com/user-attachments/assets/7695ac4c-abf4-4fbf-8615-7728716f8a11" />
