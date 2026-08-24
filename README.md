@@ -1325,6 +1325,7 @@ kubectl rollout status/history/undo deployment/<name>
 
 ---
 
+
 ## Suggested Learning Path
 
 1. Docker basics → build and run a container locally.
@@ -1338,3 +1339,7 @@ kubectl rollout status/history/undo deployment/<name>
 9. GitOps (Argo CD/Flux) → automate delivery.
 10. CRDs/Operators, Service Mesh → extend the platform.
 11. EKS specifics → run it for real on AWS.
+
+
+
+<img width="1972" height="1683" alt="image" src="https://github.com/user-attachments/assets/b7032e47-4ed1-4291-8030-ca4a008c12af" />
