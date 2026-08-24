@@ -2,22 +2,30 @@
 
 # A developer deploys an application using a Deployment, but no Pods appear. How would you investigate the issue?
 
-A Pod remains in Pending state after deployment. What possible causes would you check, and which commands would you use?
-A container repeatedly restarts and shows CrashLoopBackOff. How would you identify whether the issue is in the application, its configuration, or its dependencies?
-An application works locally but fails in Kubernetes because an environment variable is missing. How would you inject and manage configuration values?
-A Pod needs database credentials, but the team does not want to store them in the container image or plain YAML files. How would you handle this?
-A service is running with three Pods, but users cannot access it through the Service. What would you verify from Pod labels through Service endpoints?
-A new version of an application is deployed, but traffic is still reaching old Pods. What Kubernetes objects and labels would you inspect?
-A Pod is deleted manually, but it is recreated immediately. Why does this happen, and how would you stop it from being recreated?
-A Deployment has five replicas, but only three Pods are running. How would you diagnose the missing replicas?
-A container must write temporary files during runtime, but data does not need to survive a Pod restart. Which volume type would you use and why?
-A developer exposes an application with NodePort, but it is not reachable externally. What networking, firewall, and cluster-level checks would you make?
-One Pod must run on a specific node because it requires a local GPU. How would you control Pod placement?
-short answers with commands required
+1. A Pod remains in Pending state after deployment. What possible causes would you check, and which commands would you use?
 
-```
-Use this as a concise interview-ready troubleshooting flow. Replace placeholders such as `<ns>`, `<deploy>`, and `<pod>` with your actual resource names.
-```
+2. A container repeatedly restarts and shows CrashLoopBackOff. How would you identify whether the issue is in the application, its configuration, or its dependencies?
+
+3. An application works locally but fails in Kubernetes because an environment variable is missing. How would you inject and manage configuration values?
+
+4. A Pod needs database credentials, but the team does not want to store them in the container image or plain YAML files. How would you handle this?
+
+5. A service is running with three Pods, but users cannot access it through the Service. What would you verify from Pod labels through Service endpoints?
+
+6. A new version of an application is deployed, but traffic is still reaching old Pods. What Kubernetes objects and labels would you inspect?
+
+7. A Pod is deleted manually, but it is recreated immediately. Why does this happen, and how would you stop it from being recreated?
+
+8. A Deployment has five replicas, but only three Pods are running. How would you diagnose the missing replicas?
+
+9. A container must write temporary files during runtime, but data does not need to survive a Pod restart. Which volume type would you use and why?
+
+10. A developer exposes an application with NodePort, but it is not reachable externally. What networking, firewall, and cluster-level checks would you make?
+
+
+11. One Pod must run on a specific node because it requires a local GPU. How would you control Pod placement?
+
+
 
 
 ## Deployment and scheduling
