@@ -1,0 +1,39 @@
+# agr aapke paas nginx and notes-app ki services dono chl rhi hain
+# tb agr hm /nginx kre to nginx pr jaye and /notes bolne pr notes app pr jaye
+# to iske liye "ingress" use krte hain
+# ingress traffic re-route krta hai
+# ingress k liye "ingress-controller" lgta hai jo cluster pr ingress k liye help krta hai
+# ingress ke liye minikube main addons install krne hote hain. and then "ingress-nginx" namespace main pods aa jate hai
+# ingress activate hone pr do cheeze bnti hai svc and pods (job wale) bnte hain
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-notes-ingress
+  namespace: nginx
+  # / pr nginx aayega
+  # basically ingress ke specifications ko customize kr sakte ho
+  # sudo -E kubectl port-forward service/ingress-nginx-controller -n ingress-nginx 8080:80 --address=0.0.0.0
+
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: /nginx
+            backend:
+              service:
+                name: nginx-service
+                port: 
+                  number: 80
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: notes-app-service
+                port:
+                  number: 8000
+
+# dono nginx and notes-app dono pr traffic route krne ke liye annotations dalna pdega
+#                    
