@@ -1,0 +1,8 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: mysql-config-map
+  namespace: mysql
+# stateful set ki key values yha change kr skate ho
+data:
+  MYSQL_DATABASE: devops
